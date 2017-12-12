@@ -57,26 +57,24 @@ class SparseFactorAnalyzer:
         for i in range(iters):
             print('iter:', i)
 
-            #print('updating lambda')
+            print('updating lambda')
             self.update_lambda()
 
-            #print('updating psi')
+            print('updating psi')
             self.update_psi()
 
-            #print('updating sigma2')
-            self.update_lambda()
+            print('updating sigma2')
             self.update_sigma2()
 
-            self.update_lambda()
             if structured:
-                #print('updating structured F')
+                print('updating structured F')
                 self.update_structured_F()
             else:
-                #print('updating F')
+                print('updating F')
                 self.update_F()
 
             if scale:
-                #print('scaling sigma2 and F')
+                print('scaling sigma2 and F')
                 self.scale_F_sigma2()
 
             if i % 1 == 0:
