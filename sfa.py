@@ -34,8 +34,6 @@ class SparseFactorAnalyzer:
         # covariance matrix for samples
         self.Gamma = \
             np.zeros((self.k_components, self.m_samples, self.m_samples))
-        self.Gamma = np.array([make_spd_matrix(self.m_samples)
-                              for k in range(k_components)])
 
         # hyper parameters
         self.alpha = 1
@@ -44,7 +42,7 @@ class SparseFactorAnalyzer:
 
         self.lls = [-np.inf]
 
-    def ecme(self, iters, structured=False, scale=True, verbose=False):
+    def ecme(self, iters, structured=False, scale=True, verbose=True):
         """
         iters = number of iterations
         structured = whether or not to consider relationships between sampled
@@ -178,6 +176,7 @@ class SparseFactorAnalyzer:
             const = (self.m_samples + 2 * self.m_samples * (self.alpha - 1))
             newPsi[i] = const / (YtY - (2 * YgFtLg) + FtLLtFt + 2 / self.beta)
         self.psi = newPsi
+        
     """
     def update_sigma2(self):
         newSigma2 = self.sigma2
@@ -243,7 +242,6 @@ class SparseFactorAnalyzer:
                 newSigma2[i, :] += 1e-10
 
         self.sigma2 = newSigma2
-    
 
     def scale_F_sigma2(self):
         """
