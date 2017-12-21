@@ -17,12 +17,11 @@ class SparseFactorAnalyzer:
         # initialize parameters
         self.Lambda = np.ones((self.n_features, k_components))  # loadings
         self.F = np.random.random((k_components, m_samples))  # factors
+
         # ard parameters
-        self.sigma2 = np.random.random((n_features, k_components))
+        self.sigma2 = np.ones((n_features, k_components))
 
         self.scale_F_sigma2()
-
-        self.psi = np.asarray(data.var(axis=1))
 
         # data
         self.data = np.asarray(data)
@@ -30,6 +29,8 @@ class SparseFactorAnalyzer:
         # moments of loading matrix
         self.Lambda = np.zeros((n_features, k_components))
         self.Lambda2 = np.zeros((n_features, k_components, k_components))
+
+        self.psi = np.asarray(data.var(axis=1))
 
         # covariance matrix for samples
         self.Gamma_inverse = \
@@ -63,7 +64,10 @@ class SparseFactorAnalyzer:
             self.sfa_update_sigma2()
 
             print('updating F')
-            self.update_structured_F()
+            if structured:
+                self.update_structured_F()
+            else:
+                self.update_F()
 
             if scale:
                 print('scaling F, sigma2')
@@ -92,13 +96,24 @@ class SparseFactorAnalyzer:
         for i in range(self.n_features):
             sigma2 = self.sigma2[i]
             psi = self.psi[i] * np.eye(self.m_samples)
+            psi_inv = (1 / self.psi[i]) * np.eye(self.m_samples)
+
             if not np.isclose(sigma2.sum(), 0):
                 sigma2 = np.diag(sigma2)
+
+                """
                 omega = np.linalg.multi_dot([
                     sigma2,
                     self.F,
                     woodbury(psi, self.F.T, sigma2, self.F)
                 ])
+                """
+                omega = np.linalg.multi_dot([
+                    sigma2,
+                    self.F,
+                    np.linalg.inv(psi_inv + np.dot(np.dot(self.F.T, sigma2), self.F))
+                ])
+
                 Lambda[i] = np.dot(omega, self.data[i])
                 Lambda2[i] = sigma2 \
                     - np.linalg.multi_dot([omega, self.F.T, sigma2]) \
