@@ -177,7 +177,6 @@ class SparseFactorAnalyzer:
             newPsi[i] = const / (YtY - (2 * YgFtLg) + FtLLtFt + 2 / self.beta)
         self.psi = newPsi
         
-    """
     def update_sigma2(self):
         newSigma2 = self.sigma2
 
@@ -243,6 +242,7 @@ class SparseFactorAnalyzer:
 
         self.sigma2 = newSigma2
 
+    """
     def scale_F_sigma2(self):
         """
         divide rows of F by their standard deve derivative of
